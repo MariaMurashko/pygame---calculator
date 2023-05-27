@@ -40,6 +40,9 @@ for btn in buttons:
 buttonsObjects.append(
     buttons.Button('#000000', '#696969', btn, 180 if i == 1 else 90, 90, bounds, bounds[0] - width, bounds[1] - height))
 
+    width -= 180 if i == 1 else 90
+    i +=1
+
 run = True
 while run:
     clock.tick(60)
@@ -55,8 +58,55 @@ while run:
 
     screen.fill('#000000')
     for btn in buttonsObjects:
-        btn.draw(screen, isClicked)
+        text = btn.draw(screen, isClicked, mainText)
+        if text and text[0] == 'operand':
+            if text[1] != '=':
+                operand = text[1]
+                if not operatorA:
+                    operatorA = mainText
+                    mainText = ''
+                else:
+                    operatorB = mainText
+                    mainText = ''
+            else:
+                if not operatorB:
+                    operatorB = mainText
+                if operand == '+':
+                    mainText = str(int(operatorA) + int(operatorB))
+                elif operand == '-':
+                    mainText = str(int(operatorA) - int(operatorB))
+                elif operand == 'x':
+                    mainText = str(int(operatorA) * int(operatorB))
+                elif operand == '÷':
+                    mainText = str(int(operatorA) / int(operatorB))
+                elif operand == '%':
+                    mainText = str(int(operatorA) / 100)
+                operand = '='
+        elif text and text[0] == 'method':
+            if text[1] == 'AC':
+                mainText = ''
+                operatorA = 0
+                operatorB = 0
+                operand = ''
+                result = 0
+            elif text[1] == '+/-':
+                if len(mainText) != 0:
+                    if mainText[0] != '-':
+                        mainText = '-' + mainText
+                    else:
+                        mainText = mainText.repiace('-', '')
+                else:
+                    mainText = '-'
+        elif text:
+            if operand == '=':
+                mainText =''
+                operatorA = 0
+                operatorB = 0
+                operand = ''
+                result = 0
+            mainText += text
 
+    draw_text(screen, bounds, mainText)
 
     pygame.display.flip()
 
